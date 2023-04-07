@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddc-server
+  labels:
+    app: ddc-server
+    app.kubernetes.io/part-of: ddc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ddc-server
+  template:
+    metadata:
+      labels:
+        app: ddc-server
+        app.kubernetes.io/part-of: ddc
+    spec:
+      initContainers:
+        - name: app-download
+          image: alpine/git:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - git config --global http.sslVerify "false" ;
+              git clone https://github.com/xavierBizoux/pdf_viewer.git /tmp/ddc-www/ ;
+          volumeMounts:
+            - mountPath: /tmp/ddc-www
+              name: www-folder
+      containers:
+        - name: ddc-server
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: ddc
+          resources:
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/
+              name: www-folder
+      volumes:
+        - name: www-folder
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ddc-service
+  labels:
+    app: ddc-service
+    app.kubernetes.io/part-of: ddc
+spec:
+  ports:
+    - name: ddc-port
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: ddc-server
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ddc-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: myserver.sas.com
+      http:
+        paths:
+          - path: /ddc-server
+            pathType: Prefix
+            backend:
+              service:
+                name: ddc-service
+                port:
+                  number: 80
+

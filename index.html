@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+</head>
+<style>
+    iframe {
+        min-height: 98vh;
+        width: 99vw;
+    }
+</style>
+<body>
+    <iframe id="pdfViewer"></iframe>
+    <script>
+        const displayPDF = async (event) => {
+            if (event && event.data) {
+                const fileURI = event.data.data[0][1]
+                const fileURL = `https://myserver.sas.com${fileURI}/content`
+                const response = await fetch(fileURL, { credentials: "include" })
+                const blob = await response.blob()
+                console.log(blob)
+                const blobURL = URL.createObjectURL(blob)
+                document.getElementById('pdfViewer').src = blobURL
+                URL.revokeObjectURL(blobURL)
+            } else {
+                console.log("No data!")
+            }
+        }
+        // Add listener to detect VA data reception
+        if (window.addEventListener) {
+            window.addEventListener("message", (event) => displayPDF(event), false)
+        } else {
+            window.attachEvent("onmessage", (event) => displayPDF(event))
+        }
+    </script>
+</body>
+
+</html>
