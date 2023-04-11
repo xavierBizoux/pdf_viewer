@@ -21,9 +21,7 @@
                 const fileURI = event.data.data[0][1]
                 const location = window.location != window.parent.location ? document.referrer : document.location.ancestorOrigins[0]
                 const baseURL = `${location.split('/')[0]}//${location.split('/')[2]}`
-                console.log(baseURL)
                 const fileURL = `${baseURL}${fileURI}/content`
-                console.log(fileURL)
                 const response = await fetch(fileURL, { credentials: "include" })
                 const blob = await response.blob()
                 const blobURL = URL.createObjectURL(blob)
