@@ -20,13 +20,13 @@
             if (event && event.data) {
                 const fileURI = event.data.data[0][1]
                 let baseUrl = window.location != window.parent.location ? document.referrer : document.location.ancestorOrigins[0]
-                baseUrl.slice(-1,baseUrl.length) === "/" ? baseUrl = baseUrl.slice(0, -1) : baseUrl = baseUrl
-                console.log(baseUrl)
+                baseURL.slice(-1,baseURL.length) === "/" ? baseURL = baseURL.slice(0, -1) : baseURL = baseURL
+                console.log(baseURL)
                 const fileURL = `${baseUrl}${fileURI}/content`
                 const response = await fetch(fileURL, { credentials: "include" })
                 const blob = await response.blob()
                 const blobURL = URL.createObjectURL(blob)
-                document.getElementById('pdfViewer').src = fileURL
+                document.getElementById('pdfViewer').src = blobURL
                 URL.revokeObjectURL(blobURL)
             } else {
                 console.log("No data!")
