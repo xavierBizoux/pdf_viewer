@@ -19,7 +19,8 @@
         const displayPDF = async (event) => {
             if (event && event.data) {
                 const fileURI = event.data.data[0][1]
-                const fileURL = `https://myserver.sas.com${fileURI}/content`
+                const baseUrl = window.location != window.parent.location ? document.referrer : document.location.ancestorOrigins[0]
+                const fileURL = `${baseUrl}${fileURI}/content`
                 const response = await fetch(fileURL, { credentials: "include" })
                 const blob = await response.blob()
                 console.log(blob)
