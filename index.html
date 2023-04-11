@@ -19,7 +19,7 @@
         const displayPDF = async (event) => {
             if (event && event.data) {
                 const fileURI = event.data.data[0][1]
-                let baseUrl = window.location != window.parent.location ? document.referrer : document.location.ancestorOrigins[0]
+                let baseURL = window.location != window.parent.location ? document.referrer : document.location.ancestorOrigins[0]
                 baseURL.slice(-1,baseURL.length) === "/" ? baseURL = baseURL.slice(0, -1) : baseURL = baseURL
                 console.log(baseURL)
                 const fileURL = `${baseURL}${fileURI}/content`
